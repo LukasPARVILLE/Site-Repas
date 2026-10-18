@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#2f6b4f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Courses">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%232f6b4f'/%3E%3Ctext x='50' y='70' font-size='56' text-anchor='middle'%3E%F0%9F%9B%92%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%232f6b4f'/%3E%3Ctext x='50' y='70' font-size='56' text-anchor='middle'%3E%F0%9F%9B%92%3C/text%3E%3C/svg%3E">
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Ma%20liste%20de%20courses%22%2C%22short_name%22%3A%22Courses%22%2C%22display%22%3A%22standalone%22%2C%22start_url%22%3A%22.%22%2C%22background_color%22%3A%22%23f4f6f2%22%2C%22theme_color%22%3A%22%232f6b4f%22%7D">
+<title>Ma liste de courses</title>
+<style>
+:root{--bg:#f4f6f2;--card:#fff;--ink:#1d2b24;--mute:#66756c;--line:#dde4dc;--g:#2f6b4f;--gl:#e4f0e8;--y:#f5c542;--warn:#c55a11}
+@media(prefers-color-scheme:dark){:root{--bg:#141a17;--card:#1d2621;--ink:#e8efe9;--mute:#98a89e;--line:#2d3a33;--g:#6fcf9b;--gl:#243a2e;--y:#e0b13a;--warn:#f08a4b}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 "Avenir Next","Segoe UI",system-ui,sans-serif}
+main{max-width:760px;margin:0 auto;padding:16px 14px 60px}
+h1{font-size:1.5rem;margin:8px 0 14px}
+h2{font-size:1.1rem;margin:26px 0 10px}
+nav{display:flex;gap:6px;margin-bottom:16px;background:var(--card);padding:5px;border-radius:12px;border:1px solid var(--line)}
+nav button{flex:1;border:0;background:none;padding:10px;border-radius:8px;font:inherit;font-weight:600;color:var(--mute);cursor:pointer}
+nav button.on{background:var(--g);color:#fff}
+button,select,input{font:inherit;color:inherit}
+button{cursor:pointer}
+button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--y);outline-offset:1px}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 12px;font-weight:600}
+.btn.p{background:var(--g);border-color:var(--g);color:#fff}
+.btn.d{color:var(--warn)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.stepper{display:inline-flex;align-items:center;gap:6px}
+.stepper button{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--card);font-size:1.1rem;font-weight:700}
+.stepper b{min-width:28px;text-align:center}
+.slot{display:grid;grid-template-columns:30px 1fr auto auto;gap:8px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:8px}
+.slot.dup{border-color:var(--warn)}
+.num{width:28px;height:28px;border-radius:50%;background:var(--gl);color:var(--g);display:grid;place-items:center;font-weight:700}
+select,input{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px;min-width:0;width:100%}
+.dice{background:var(--y);border:0;color:#2b2200;border-radius:10px;padding:8px 12px;font-weight:700;white-space:nowrap}
+.dice.roll span{display:inline-block;animation:spin .45s}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.dice.roll span{animation:none}}
+.note{color:var(--warn);font-size:.85rem;margin:-4px 0 8px 40px}
+.empty{color:var(--mute);padding:14px;border:1px dashed var(--line);border-radius:12px}
+.rayon{font-weight:700;color:var(--g);margin:16px 0 4px}
+.item{display:flex;gap:10px;align-items:center;padding:9px 4px;border-bottom:1px solid var(--line);cursor:pointer}
+.item input{width:20px;height:20px;accent-color:var(--g);flex:none}
+.item .q{margin-left:auto;font-weight:700;white-space:nowrap}
+.item.done{color:var(--mute);text-decoration:line-through}
+details{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:8px}
+summary{padding:12px;font-weight:700;cursor:pointer}
+summary small{color:var(--mute);font-weight:400;margin-left:6px}
+.body{padding:0 12px 12px}
+.ing{display:grid;grid-template-columns:2fr 1fr 1fr 1.2fr 34px;gap:6px;margin-bottom:6px}
+.ing.h{color:var(--mute);font-size:.8rem}
+.x{border:0;background:none;color:var(--warn);font-size:1.2rem}
+@media(max-width:560px){.slot{grid-template-columns:30px 1fr auto}.slot .times{grid-column:2/4}.ing{grid-template-columns:1fr 1fr}.ing.h{display:none}}
+@media print{nav,.noprint{display:none!important}body{background:#fff;color:#000}}
+</style>
+</head>
+<body>
+<main>
+<h1>🛒 Ma liste de courses</h1>
+<div id="st" style="color:var(--mute);font-size:.85rem;margin:-8px 0 10px"></div>
+<div id="warn" class="empty" hidden style="margin-bottom:12px;color:var(--warn)">⚠ Ton navigateur ne peut pas enregistrer les données ici : tes recettes seront perdues à la fermeture. Ouvre le site depuis son adresse web (pas depuis le fichier) ou dans Safari / Chrome.</div>
+<nav class="noprint"><button id="t-week" class="on">Ma semaine</button><button id="t-rec">Mes recettes</button></nav>
+<section id="week"></section>
+<section id="rec" hidden></section>
+</main>
+<datalist id="units"><option>g</option><option>kg</option><option>ml</option><option>cl</option><option>L</option><option>pièce(s)</option><option>c. à soupe</option><option>c. à café</option><option>boîte(s)</option><option>sachet(s)</option></datalist>
+<datalist id="rayons"><option>Fruits et légumes</option><option>Boucherie</option><option>Frais</option><option>Épicerie</option><option>Surgelés</option><option>Boissons</option></datalist>
+<script>
+const $=s=>document.querySelector(s), uid=()=>Math.random().toString(36).slice(2,9);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const KEY='liste_courses_v1';
+function demo(){
+  const R=(name,ings)=>({id:uid(),name,ings:ings.map(([n,q,u,r])=>({n,q,u,r}))});
+  const rec=[
+    R('Pâtes carbonara',[['Pâtes',400,'g','Épicerie'],['Lardons',200,'g','Frais'],['Œufs',3,'pièce(s)','Frais'],['Crème fraîche',20,'cl','Frais']]),
+    R('Poulet rôti et pommes de terre',[['Poulet',1,'pièce(s)','Boucherie'],['Pommes de terre',1000,'g','Fruits et légumes']]),
+    R('Salade de riz',[['Riz',300,'g','Épicerie'],['Thon',1,'boîte(s)','Épicerie'],['Œufs',2,'pièce(s)','Frais'],['Tomates',3,'pièce(s)','Fruits et légumes']]),
+    R('Gratin de courgettes',[['Courgettes',800,'g','Fruits et légumes'],['Crème fraîche',20,'cl','Frais'],['Gruyère râpé',100,'g','Frais']]),
+    R('Soupe de légumes',[['Pommes de terre',500,'g','Fruits et légumes'],['Carottes',400,'g','Fruits et légumes'],['Poireaux',2,'pièce(s)','Fruits et légumes']]),
+    R('Omelette aux champignons',[['Œufs',6,'pièce(s)','Frais'],['Champignons',250,'g','Fruits et légumes']])];
+  return {recipes:rec,plan:[0,1,2,3].map(()=>({rid:'',times:1})),checked:{},open:''};
+}
+let S; try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+if(!S||!S.recipes) S=demo();
+const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+/* ---------- synchronisation avec ton Google Sheet (Apps Script) ---------- */
+const SK='liste_courses_sync';
+let sync=null,dirty=false,tmr,busy=false; try{sync=JSON.parse(localStorage.getItem(SK))}catch(e){}
+const setSt=t=>{const e=document.getElementById('st');if(e)e.textContent=t};
+const payload=()=>({recipes:S.recipes,plan:S.plan,checked:S.checked,ts:S.ts||0});
+const save=()=>{S.ts=Date.now();persist();if(sync){dirty=true;clearTimeout(tmr);tmr=setTimeout(push,700);setSt('☁ Envoi…')}};
+async function push(){
+  if(!sync) return; const ts=S.ts;
+  try{const r=await fetch(sync.url,{method:'POST',body:JSON.stringify(payload())}); const j=await r.json(); if(!j.ok) throw 0;
+    if(j.stale&&j.data){adopt(j.data);dirty=false}else if(S.ts===ts) dirty=false; setSt('☁ Synchronisé')}
+  catch(e){setSt('⚠ Hors ligne : les changements seront renvoyés dès que possible')}
+}
+function adopt(d){S.recipes=d.recipes;S.plan=(d.plan&&d.plan.length)?d.plan:[{rid:'',times:1}];S.checked=d.checked||{};S.ts=d.ts||0;persist();render()}
+async function pull(){
+  if(!sync||busy) return; if(dirty) return push();
+  const a=document.activeElement; if(a&&/INPUT|SELECT|TEXTAREA/.test(a.tagName)) return;
+  busy=true;
+  try{const r=await fetch(sync.url+(sync.url.includes('?')?'&':'?')+'t='+Date.now()); const d=await r.json();
+    if(d&&Array.isArray(d.recipes)&&(d.ts||0)>(S.ts||0)) adopt(d); setSt('☁ Synchronisé')}
+  catch(e){setSt('⚠ Hors ligne')}
+  busy=false;
+}
+async function syncConnect(raw){
+  const url=String(raw||'').trim(); if(!/^https:\/\/script\.google\.com\/.+\/exec/.test(url)) return alert("Adresse non valide. Elle doit ressembler à https://script.google.com/macros/s/…/exec");
+  try{const r=await fetch(url+'?t='+Date.now()); const d=await r.json(); if(!d||!Array.isArray(d.recipes)) throw 0;
+    if(d.recipes.length){ if(S.ts&&!confirm('Les recettes de cet appareil seront remplacées par celles de ton Google Sheet. Continuer ?')) return;
+      sync={url}; localStorage.setItem(SK,JSON.stringify(sync)); adopt(d)}
+    else{ sync={url}; localStorage.setItem(SK,JSON.stringify(sync)); S.ts=Date.now(); persist(); dirty=true; await push()}
+    setSt('☁ Synchronisé'); renderRec()}
+  catch(e){alert("Connexion impossible. Vérifie que l'adresse est la bonne et que le déploiement est réglé sur « Accès : Tout le monde ».")}
+}
+const syncHtml=()=>`<h2>Synchronisation entre appareils</h2>`+(sync
+  ?`<p style="margin-top:0">Synchro active avec ton Google Sheet. Tu peux aussi y modifier tes recettes directement.<br><span style="color:var(--mute)">Pour un autre appareil : ouvre le lien de configuration ci-dessous, tout est branché automatiquement.</span></p><div class="row"><button class="btn p" data-a="synccopy">Copier le lien de configuration</button><button class="btn d" data-a="syncoff">Arrêter la synchro</button></div>`
+  :`<p style="color:var(--mute);margin-top:0">Colle l'adresse de ton application Google (voir le guide README) pour retrouver tes recettes sur tous tes appareils.</p><div class="row"><input id="sheeturl" placeholder="https://script.google.com/macros/s/…/exec" style="flex:1"><button class="btn p" data-a="syncconnect">Connecter</button></div>`)
+  +`<p style="color:var(--mute);font-size:.85rem">Les données sont dans TON Google Sheet. Toute personne qui a le lien de configuration peut lire et modifier la liste : garde-le pour toi et tes proches.</p>`;
+const rec=id=>S.recipes.find(r=>r.id===id);
+const fmt=n=>(Math.round(n*100)/100).toLocaleString('fr-FR',{maximumFractionDigits:2});
+
+/* ---------- tirage au sort ---------- */
+function roll(i){
+  const others=S.plan.filter((_,j)=>j!==i).map(p=>p.rid);
+  let pool=S.recipes.filter(r=>!others.includes(r.id));
+  if(!pool.length) pool=S.recipes;
+  const cur=S.plan[i].rid;
+  if(pool.length>1) pool=pool.filter(r=>r.id!==cur);
+  if(pool.length) S.plan[i].rid=pool[Math.floor(Math.random()*pool.length)].id;
+}
+
+/* ---------- semaine ---------- */
+function list(){
+  const m=new Map();
+  S.plan.forEach(p=>{const r=rec(p.rid); if(!r) return;
+    r.ings.forEach(g=>{ if(!g.n||!(+g.q>0)) return;
+      const k=g.n.trim().toLowerCase()+'|'+(g.u||'').trim().toLowerCase();
+      const e=m.get(k)||{k,n:g.n.trim(),u:(g.u||'').trim(),r:(g.r||'').trim()||'Autres',q:0};
+      e.q+=g.q*p.times; if(!e.r||e.r==='Autres') e.r=(g.r||'').trim()||'Autres'; m.set(k,e);});});
+  const by={}; [...m.values()].forEach(e=>(by[e.r]=by[e.r]||[]).push(e));
+  return Object.keys(by).sort((a,b)=>a==='Autres'?1:b==='Autres'?-1:a.localeCompare(b,'fr'))
+    .map(r=>[r,by[r].sort((a,b)=>a.n.localeCompare(b.n,'fr'))]);
+}
+function renderWeek(){
+  const used=S.plan.map(p=>p.rid).filter(Boolean);
+  let h=`<div class="row" style="justify-content:space-between"><div class="stepper"><span>Nombre de recettes</span>
+    <button data-a="n" data-d="-1" aria-label="Moins">−</button><b>${S.plan.length}</b><button data-a="n" data-d="1" aria-label="Plus">+</button></div>
+    <div class="row"><button class="btn" data-a="fill">Remplir les vides</button><button class="btn p" data-a="all">🎲 Tout relancer</button></div></div><h2>Mes repas</h2>`;
+  if(!S.recipes.length) h+=`<p class="empty">Ajoute d'abord des recettes dans l'onglet « Mes recettes ».</p>`;
+  S.plan.forEach((p,i)=>{
+    const dup=p.rid&&used.filter(x=>x===p.rid).length>1;
+    h+=`<div class="slot ${dup?'dup':''}"><div class="num">${i+1}</div>
+      <select data-a="pick" data-i="${i}" aria-label="Recette ${i+1}"><option value="">— choisir une recette —</option>${S.recipes.map(r=>`<option value="${r.id}"${r.id===p.rid?' selected':''}>${esc(r.name)}</option>`).join('')}</select>
+      <button class="dice" data-a="roll" data-i="${i}"><span>🎲</span> Au hasard</button>
+      <div class="stepper times"><button data-a="tm" data-i="${i}" data-d="-1" aria-label="Moins">−</button><b>×${p.times}</b><button data-a="tm" data-i="${i}" data-d="1" aria-label="Plus">+</button></div></div>`;
+    if(dup) h+=`<div class="note">Déjà choisie sur une autre ligne.</div>`;
+  });
+  const L=list();
+  h+=`<h2>Liste de courses</h2>`;
+  if(!L.length) h+=`<p class="empty">Choisis une recette (ou clique sur 🎲) : la liste se remplit toute seule.</p>`;
+  else{
+    h+=`<div class="row noprint" style="margin-bottom:6px"><button class="btn" data-a="copy">Copier la liste</button><button class="btn" data-a="print">Imprimer</button><button class="btn" data-a="uncheck">Tout décocher</button></div>`;
+    L.forEach(([r,items])=>{h+=`<div class="rayon">${esc(r)}</div>`+items.map(e=>`<label class="item ${S.checked[e.k]?'done':''}"><input type="checkbox" data-a="chk" data-k="${esc(e.k)}"${S.checked[e.k]?' checked':''}><span>${esc(e.n)}</span><span class="q">${fmt(e.q)} ${esc(e.u)}</span></label>`).join('')});
+  }
+  $('#week').innerHTML=h;
+}
+
+/* ---------- recettes ---------- */
+function renderRec(){
+  let h=`<div class="row"><input id="newname" placeholder="Nom de la nouvelle recette" style="flex:1"><button class="btn p" data-a="addrec">Ajouter</button></div><h2>${S.recipes.length} recette(s)</h2>`;
+  if(!S.recipes.length) h+=`<p class="empty">Aucune recette. Tape un nom ci-dessus puis ajoute ses ingrédients.</p>`;
+  S.recipes.forEach(r=>{
+    h+=`<details data-id="${r.id}"${S.open===r.id?' open':''}><summary>${esc(r.name)}<small>${r.ings.length} ingrédient(s)</small></summary><div class="body">
+      <div class="row" style="margin-bottom:10px"><input data-a="rname" data-r="${r.id}" value="${esc(r.name)}" style="flex:1" aria-label="Nom"><button class="btn d" data-a="delrec" data-r="${r.id}">Supprimer la recette</button></div>
+      <div class="ing h"><span>Ingrédient</span><span>Quantité (pour 1 fois)</span><span>Unité</span><span>Rayon</span><span></span></div>`;
+    r.ings.forEach((g,k)=>{h+=`<div class="ing">
+      <input data-a="ing" data-f="n" data-r="${r.id}" data-k="${k}" value="${esc(g.n)}" placeholder="Ingrédient">
+      <input data-a="ing" data-f="q" data-r="${r.id}" data-k="${k}" type="number" min="0" step="any" value="${g.q??''}" placeholder="Qté">
+      <input data-a="ing" data-f="u" data-r="${r.id}" data-k="${k}" value="${esc(g.u)}" list="units" placeholder="Unité">
+      <input data-a="ing" data-f="r" data-r="${r.id}" data-k="${k}" value="${esc(g.r)}" list="rayons" placeholder="Rayon">
+      <button class="x" data-a="deling" data-r="${r.id}" data-k="${k}" aria-label="Retirer">×</button></div>`});
+    h+=`<button class="btn" data-a="adding" data-r="${r.id}">+ Ingrédient</button></div></details>`;
+  });
+  h+=syncHtml()+`<h2>Sauvegarde</h2><p style="color:var(--mute);margin-top:0">Tes données restent dans ce navigateur. Exporte-les pour les garder ou les ouvrir sur un autre appareil.</p>
+    <div class="row"><button class="btn" data-a="export">Exporter</button><button class="btn" data-a="import">Importer</button><input type="file" id="file" accept=".json" hidden></div>`;
+  $('#rec').innerHTML=h;
+}
+const render=()=>{renderWeek();renderRec()};
+function tab(t){$('#week').hidden=t!=='week';$('#rec').hidden=t!=='rec';$('#t-week').classList.toggle('on',t==='week');$('#t-rec').classList.toggle('on',t==='rec');if(t==='week')renderWeek()}
+$('#t-week').onclick=()=>tab('week');$('#t-rec').onclick=()=>tab('rec');
+
+/* ---------- actions ---------- */
+function copyText(t){
+  if(navigator.clipboard&&window.isSecureContext) return navigator.clipboard.writeText(t).catch(()=>fb(t));
+  fb(t);
+  function fb(t){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(e){}a.remove()}
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('button[data-a]'); if(!b) return;
+  const a=b.dataset.a,i=+b.dataset.i,r=rec(b.dataset.r);
+  if(a==='n'){const d=+b.dataset.d,n=Math.min(10,Math.max(1,S.plan.length+d)); while(S.plan.length<n)S.plan.push({rid:'',times:1}); S.plan.length=n; save(); renderWeek()}
+  else if(a==='roll'){roll(i);save();renderWeek();const nb=document.querySelector(`[data-a=roll][data-i="${i}"]`);nb&&nb.classList.add('roll')}
+  else if(a==='all'){S.plan.forEach((_,j)=>S.plan[j].rid='');S.plan.forEach((_,j)=>roll(j));save();renderWeek()}
+  else if(a==='fill'){S.plan.forEach((p,j)=>{if(!p.rid)roll(j)});save();renderWeek()}
+  else if(a==='tm'){const p=S.plan[i];p.times=Math.min(9,Math.max(1,p.times+ +b.dataset.d));save();renderWeek()}
+  else if(a==='copy'){copyText(list().map(([r,it])=>r+'\n'+it.map(x=>'- '+x.n+' : '+fmt(x.q)+' '+x.u).join('\n')).join('\n\n'));b.textContent='Copié ✔';setTimeout(()=>b.textContent='Copier la liste',1500)}
+  else if(a==='print') window.print();
+  else if(a==='uncheck'){S.checked={};save();renderWeek()}
+  else if(a==='addrec'){const v=$('#newname').value.trim(); if(!v) return $('#newname').focus(); const n={id:uid(),name:v,ings:[{n:'',q:'',u:'',r:''}]};S.recipes.push(n);S.open=n.id;save();renderRec()}
+  else if(a==='delrec'){if(confirm('Supprimer « '+r.name+' » ?')){S.recipes=S.recipes.filter(x=>x!==r);S.plan.forEach(p=>{if(p.rid===r.id)p.rid=''});save();renderRec()}}
+  else if(a==='adding'){r.ings.push({n:'',q:'',u:'',r:''});S.open=r.id;save();renderRec()}
+  else if(a==='deling'){r.ings.splice(+b.dataset.k,1);S.open=r.id;save();renderRec()}
+  else if(a==='export'){const l=document.createElement('a');l.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,1)],{type:'application/json'}));l.download='mes-recettes.json';l.click()}
+  else if(a==='import') $('#file').click();
+  else if(a==='syncconnect') syncConnect($('#sheeturl').value);
+  else if(a==='synccopy'){copyText(location.href.split('#')[0]+'#sheet='+encodeURIComponent(sync.url));b.textContent='Lien copié ✔';setTimeout(()=>b.textContent='Copier le lien de configuration',1500)}
+  else if(a==='syncoff'){if(confirm('Arrêter la synchro sur cet appareil ? Tes recettes restent ici.')){sync=null;localStorage.removeItem(SK);setSt('');renderRec()}}
+});
+document.addEventListener('change',e=>{
+  const t=e.target,a=t.dataset.a;
+  if(t.id==='file'){const f=t.files[0]; if(!f) return; f.text().then(x=>{try{const d=JSON.parse(x); if(!d.recipes) throw 0; S=d; S.plan=S.plan||[]; save(); render()}catch(err){alert('Fichier non valide.')}}); return}
+  if(a==='pick'){S.plan[+t.dataset.i].rid=t.value;save();renderWeek()}
+  else if(a==='chk'){S.checked[t.dataset.k]=t.checked;save();t.closest('.item').classList.toggle('done',t.checked)}
+  else if(a==='rname'){const r=rec(t.dataset.r);r.name=t.value.trim()||r.name;S.open=r.id;save();renderRec()}
+  else if(a==='ing'){const r=rec(t.dataset.r),g=r.ings[+t.dataset.k],f=t.dataset.f;g[f]=f==='q'?(t.value===''?'':parseFloat(t.value)):t.value;S.open=r.id;save()}
+});
+document.addEventListener('toggle',e=>{const d=e.target; if(d.tagName==='DETAILS'){if(d.open)S.open=d.dataset.id;else if(S.open===d.dataset.id)S.open='';save()}},true);
+try{localStorage.setItem('t','1');localStorage.removeItem('t')}catch(e){$('#warn').hidden=false}
+try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
+render();
+const hm=location.hash.match(/sheet=([^&]+)/);
+if(hm&&!sync){syncConnect(decodeURIComponent(hm[1]));history.replaceState(null,'',location.pathname+location.search)}
+if(sync){setSt('☁ Synchronisation…');pull()}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&sync)pull()});
+setInterval(()=>{if(sync&&!document.hidden)pull()},15000);
+</script>
+</body>
+</html>
