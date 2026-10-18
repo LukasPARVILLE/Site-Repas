@@ -89,7 +89,11 @@ if(!S||!S.recipes) S=demo();
 const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 /* ---------- synchronisation avec ton Google Sheet (Apps Script) ---------- */
 const SK='liste_courses_sync';
+/* >>> Colle ici l'adresse /exec de ton Google Sheet (entre les guillemets) pour que TOUS tes appareils, y compris l'icône de l'écran d'accueil, soient connectés automatiquement. <<< */
+const DEFAULT_SHEET='https://script.google.com/macros/s/AKfycbzeYGSEbg_kqRCpGhO8r_xsHrQ3jEYNEN1IZcDXuAFfzBHILXT7f8FiF2DXnHjpoAj8/exec';
 let sync=null,dirty=false,tmr,busy=false; try{sync=JSON.parse(localStorage.getItem(SK))}catch(e){}
+if(!sync&&DEFAULT_SHEET) sync={url:DEFAULT_SHEET};
+const keepLink=()=>{try{if(sync)history.replaceState(null,'',location.pathname+location.search+'#sheet='+encodeURIComponent(sync.url))}catch(e){}};
 const setSt=t=>{const e=document.getElementById('st');if(e)e.textContent=t};
 const payload=()=>({recipes:S.recipes,plan:S.plan,checked:S.checked,ts:S.ts||0});
 const save=()=>{S.ts=Date.now();persist();if(sync){dirty=true;clearTimeout(tmr);tmr=setTimeout(push,700);setSt('☁ Envoi…')}};
@@ -115,7 +119,7 @@ async function syncConnect(raw){
     if(d.recipes.length){ if(S.ts&&!confirm('Les recettes de cet appareil seront remplacées par celles de ton Google Sheet. Continuer ?')) return;
       sync={url}; localStorage.setItem(SK,JSON.stringify(sync)); adopt(d)}
     else{ sync={url}; localStorage.setItem(SK,JSON.stringify(sync)); S.ts=Date.now(); persist(); dirty=true; await push()}
-    setSt('☁ Synchronisé'); renderRec()}
+    setSt('☁ Synchronisé'); keepLink(); renderRec()}
   catch(e){alert("Connexion impossible. Vérifie que l'adresse est la bonne et que le déploiement est réglé sur « Accès : Tout le monde ».")}
 }
 const syncHtml=()=>`<h2>Synchronisation entre appareils</h2>`+(sync
@@ -220,7 +224,7 @@ document.addEventListener('click',e=>{
   else if(a==='import') $('#file').click();
   else if(a==='syncconnect') syncConnect($('#sheeturl').value);
   else if(a==='synccopy'){copyText(location.href.split('#')[0]+'#sheet='+encodeURIComponent(sync.url));b.textContent='Lien copié ✔';setTimeout(()=>b.textContent='Copier le lien de configuration',1500)}
-  else if(a==='syncoff'){if(confirm('Arrêter la synchro sur cet appareil ? Tes recettes restent ici.')){sync=null;localStorage.removeItem(SK);setSt('');renderRec()}}
+  else if(a==='syncoff'){if(confirm('Arrêter la synchro sur cet appareil ? Tes recettes restent ici.')){sync=null;localStorage.removeItem(SK);try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}setSt('');renderRec()}}
 });
 document.addEventListener('change',e=>{
   const t=e.target,a=t.dataset.a;
@@ -235,8 +239,8 @@ try{localStorage.setItem('t','1');localStorage.removeItem('t')}catch(e){$('#warn
 try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
 render();
 const hm=location.hash.match(/sheet=([^&]+)/);
-if(hm&&!sync){syncConnect(decodeURIComponent(hm[1]));history.replaceState(null,'',location.pathname+location.search)}
-if(sync){setSt('☁ Synchronisation…');pull()}
+if(hm&&!sync){syncConnect(decodeURIComponent(hm[1]))}
+if(sync){setSt('☁ Synchronisation…');keepLink();pull()}
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&sync)pull()});
 setInterval(()=>{if(sync&&!document.hidden)pull()},15000);
 </script>
