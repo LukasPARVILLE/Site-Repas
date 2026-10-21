@@ -98,7 +98,7 @@ const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 /* ---------- synchronisation avec ton Google Sheet (Apps Script) ---------- */
 const SK='liste_courses_sync';
 /* >>> Colle ici l'adresse /exec de ton Google Sheet (entre les guillemets) pour que TOUS tes appareils, y compris l'icône de l'écran d'accueil, soient connectés automatiquement. <<< */
-const DEFAULT_SHEET='';
+const DEFAULT_SHEET='https://script.google.com/macros/s/AKfycbzeYGSEbg_kqRCpGhO8r_xsHrQ3jEYNEN1IZcDXuAFfzBHILXT7f8FiF2DXnHjpoAj8/exec';
 let typing=false,sync=null,dirty=false,tmr,busy=false; try{sync=JSON.parse(localStorage.getItem(SK))}catch(e){}
 if(!sync&&DEFAULT_SHEET) sync={url:DEFAULT_SHEET};
 const keepLink=()=>{try{if(sync)history.replaceState(null,'',location.pathname+location.search+'#sheet='+encodeURIComponent(sync.url))}catch(e){}};
