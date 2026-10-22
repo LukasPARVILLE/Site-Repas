@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#2f6b4f">
+<meta name="color-scheme" content="only light">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Courses">
@@ -39,8 +40,13 @@ button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visi
 .slot{display:grid;grid-template-columns:34px 1fr auto auto;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;margin-bottom:10px;box-shadow:0 1px 0 var(--line),0 6px 14px -10px rgba(60,40,20,.35)}
 .slot.dup{border-color:var(--warn)}
 .num{width:34px;height:34px;border-radius:50%;background:var(--card);border:2px solid var(--line);box-shadow:inset 0 0 0 4px var(--gl);color:var(--g);display:grid;place-items:center;font:700 .95rem var(--serif)}
-select,input{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px;min-width:0;width:100%}
+select,input,textarea{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px;min-width:0;width:100%}
 select{font-family:var(--serif);font-weight:600}
+.prep{background:var(--card);border:1px dashed var(--line);border-radius:12px;padding:10px 14px;margin:-2px 0 12px 44px;font-size:.95rem}
+.prep ul{margin:4px 0 10px;padding-left:20px}.prep p{margin:4px 0 0;white-space:pre-wrap;line-height:1.55}.prep b{font-family:var(--serif)}
+.note2{margin:-4px 0 10px 44px}
+.link{border:0;background:none;color:var(--g);font-weight:600;padding:2px 0}
+textarea{resize:vertical;min-height:120px;font-family:inherit;line-height:1.5;display:block;margin-top:4px}
 .dice{background:var(--y);border:0;color:#2b2200;border-radius:999px;padding:9px 14px;font-weight:700;white-space:nowrap;box-shadow:0 2px 0 rgba(0,0,0,.15)}
 .dice:active{transform:translateY(1px);box-shadow:none}
 .dice.roll span{display:inline-block;animation:spin .45s}
@@ -97,7 +103,7 @@ const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 /* ---------- synchronisation avec ton Google Sheet (Apps Script) ---------- */
 const SK='liste_courses_sync';
 /* >>> Colle ici l'adresse /exec de ton Google Sheet (entre les guillemets) pour que TOUS tes appareils, y compris l'icône de l'écran d'accueil, soient connectés automatiquement. <<< */
-const DEFAULT_SHEET='https://script.google.com/macros/s/AKfycbzeYGSEbg_kqRCpGhO8r_xsHrQ3jEYNEN1IZcDXuAFfzBHILXT7f8FiF2DXnHjpoAj8/exec';
+const DEFAULT_SHEET='https://script.google.com/macros/s/AKfycbzuMPZD84LPyHCUFfg9KJD4XovE0Lp2nuFL5YGTo2fe925Xa2qkFFk8xYOsTUJv3mmN/exec';
 let typing=false,sync=null,dirty=false,tmr,busy=false; try{sync=JSON.parse(localStorage.getItem(SK))}catch(e){}
 if(!sync&&DEFAULT_SHEET) sync={url:DEFAULT_SHEET};
 const keepLink=()=>{try{if(sync)history.replaceState(null,'',location.pathname+location.search+'#sheet='+encodeURIComponent(sync.url))}catch(e){}};
@@ -159,6 +165,7 @@ function list(){
     .map(r=>[r,by[r].sort((a,b)=>a.n.localeCompare(b.n,'fr'))]);
 }
 const ric=r=>{r=r.toLowerCase();return /légum|fruit/.test(r)?'🥕':/bouch|viande|poisson/.test(r)?'🥩':/frais|crèm|lait|fromage/.test(r)?'🧀':/épic/.test(r)?'🥫':/surgel/.test(r)?'🧊':/boisson/.test(r)?'🥤':/boulang|pain/.test(r)?'🥖':'🛒'};
+const showP=new Set();
 function renderWeek(){
   const used=S.plan.map(p=>p.rid).filter(Boolean);
   let h=`<div class="row" style="justify-content:space-between"><div class="stepper"><span>Nombre de recettes</span>
@@ -172,6 +179,9 @@ function renderWeek(){
       <button class="dice" data-a="roll" data-i="${i}"><span>🎲</span> Au hasard</button>
       <div class="stepper times"><button data-a="tm" data-i="${i}" data-d="-1" aria-label="Moins">−</button><b>×${p.times}</b><button data-a="tm" data-i="${i}" data-d="1" aria-label="Plus">+</button></div></div>`;
     if(dup) h+=`<div class="note">Déjà choisie sur une autre ligne.</div>`;
+    const rr=rec(p.rid);
+    if(rr){const op=showP.has(rr.id); h+=`<div class="note2"><button class="link" data-a="showprep" data-r="${rr.id}">${op?'▾ Masquer la recette':'📖 Voir la recette'}</button></div>`;
+      if(op) h+=`<div class="prep"><b>Ingrédients (×${p.times})</b><ul>${rr.ings.filter(g=>g.n).map(g=>`<li>${g.q!==''&&g.q!=null?fmt(g.q*p.times)+' '+esc(g.u)+' ':''}${esc(g.n)}</li>`).join('')}</ul><b>Préparation</b>${rr.prep?`<p>${esc(rr.prep)}</p>`:`<p style="color:var(--mute)">Pas encore de préparation : ajoute-la dans « Mes recettes ».</p>`}</div>`}
   });
   const L=list();
   h+=`<h2>🧺 Liste de courses</h2>`;
@@ -197,7 +207,8 @@ function renderRec(){
       <input data-a="ing" data-f="u" data-r="${r.id}" data-k="${k}" value="${esc(g.u)}" list="units" placeholder="Unité">
       <input data-a="ing" data-f="r" data-r="${r.id}" data-k="${k}" value="${esc(g.r)}" list="rayons" placeholder="Rayon">
       <button class="x" data-a="deling" data-r="${r.id}" data-k="${k}" aria-label="Retirer">×</button></div>`});
-    h+=`<button class="btn" data-a="adding" data-r="${r.id}">+ Ingrédient</button></div></details>`;
+    h+=`<button class="btn" data-a="adding" data-r="${r.id}">+ Ingrédient</button>
+      <h3 style="font:700 1rem var(--serif);margin:16px 0 0">📝 Préparation</h3><textarea data-a="rprep" data-r="${r.id}" placeholder="Les étapes de la recette, ton astuce, le temps de cuisson…">${esc(r.prep||'')}</textarea></div></details>`;
   });
   h+=syncHtml()+`<h2>Sauvegarde</h2><p style="color:var(--mute);margin-top:0">Tes données restent dans ce navigateur. Exporte-les pour les garder ou les ouvrir sur un autre appareil.</p>
     <div class="row"><button class="btn" data-a="export">Exporter</button><button class="btn" data-a="import">Importer</button><input type="file" id="file" accept=".json" hidden></div>`;
@@ -229,6 +240,7 @@ document.addEventListener('click',e=>{
   else if(a==='adding'){r.ings.push({n:'',q:'',u:'',r:''});S.open=r.id;save();renderRec()}
   else if(a==='deling'){r.ings.splice(+b.dataset.k,1);S.open=r.id;save();renderRec()}
   else if(a==='export'){const l=document.createElement('a');l.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,1)],{type:'application/json'}));l.download='mes-recettes.json';l.click()}
+  else if(a==='showprep'){const k=b.dataset.r; showP.has(k)?showP.delete(k):showP.add(k); renderWeek()}
   else if(a==='import') $('#file').click();
   else if(a==='syncconnect') syncConnect($('#sheeturl').value);
   else if(a==='synccopy'){copyText(location.href.split('#')[0]+'#sheet='+encodeURIComponent(sync.url));b.textContent='Lien copié ✔';setTimeout(()=>b.textContent='Copier le lien de configuration',1500)}
@@ -240,6 +252,7 @@ document.addEventListener('change',e=>{
   if(a==='pick'){S.plan[+t.dataset.i].rid=t.value;save();renderWeek()}
   else if(a==='chk'){S.checked[t.dataset.k]=t.checked;save();t.closest('.item').classList.toggle('done',t.checked)}
   else if(a==='rname'){const r=rec(t.dataset.r);r.name=t.value.trim()||r.name;S.open=r.id;save();renderRec()}
+  else if(a==='rprep'){const r=rec(t.dataset.r);r.prep=t.value;S.open=r.id;save()}
   else if(a==='ing'){const r=rec(t.dataset.r),g=r.ings[+t.dataset.k],f=t.dataset.f;g[f]=f==='q'?(t.value===''?'':parseFloat(t.value)):t.value;S.open=r.id;save()}
 });
 document.addEventListener('toggle',e=>{const d=e.target; if(d.tagName==='DETAILS'){if(d.open)S.open=d.dataset.id;else if(S.open===d.dataset.id)S.open='';save()}},true);
@@ -249,7 +262,7 @@ render();
 const hm=location.hash.match(/sheet=([^&]+)/);
 if(hm&&!sync){syncConnect(decodeURIComponent(hm[1]))}
 if(sync){setSt('☁ Synchronisation…');keepLink();pull()}
-document.addEventListener('input',e=>{if(e.target.matches&&e.target.matches('input'))typing=true});
+document.addEventListener('input',e=>{if(e.target.matches&&e.target.matches('input,textarea'))typing=true});
 document.addEventListener('change',()=>{typing=false});
 document.addEventListener('focusout',()=>{typing=false});
 window.addEventListener('focus',()=>{if(sync)pull()});
