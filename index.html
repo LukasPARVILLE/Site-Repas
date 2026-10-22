@@ -162,40 +162,44 @@ function roll(i){
 }
 
 /* ---------- semaine ---------- */
-/* Rangement automatique par rayon (dans l'ordre d'un parcours en magasin) */
-const RAY=[['Fruits et légumes','🥕','fl'],['Boulangerie','🥖','boul'],['Boucherie et charcuterie','🥩','bouch'],['Poissonnerie','🐟','pois'],['Crèmerie et œufs','🧀','crem'],['Épicerie','🥫','epic'],['Épices, huiles et sauces','🧂','epices'],['Sucré et petit-déjeuner','🥣','sucre'],['Boissons','🥤','bois'],['Maison et hygiène','🧴','maison'],['Surgelés','🧊','surg'],['Autres','🛒','autres']];
+/* Rangement automatique par rayon */
+const RAY=[['Fruits & légumes','🥕','fl'],['Boucherie & volailles','🥩','bouch'],['Poissonnerie','🐟','pois'],['Produits frais & produits laitiers','🧀','frais'],['Féculents','🍝','fec'],['Épices, huiles & sauces','🧂','epices'],['Petit-déjeuner','🥣','pdej'],['Boulangerie & pain','🥖','boul'],['Pâtisserie','🧁','patis'],['Biscuits & confiseries','🍪','bisc'],['Surgelés','🧊','surg'],['Boissons','🥤','bois'],['Autres','🛒','autres']];
 const RI=Object.fromEntries(RAY.map((r,i)=>[r[2],i]));
 const RULES=[
  ['fl','jus (de|d.) ?(citron|lime)'],
  ['pois','saint.?jacques'],
- ['sucre','sucre (glace|vanille|roux|semoule|en poudre)'],
+ ['bouch','noix de (veau|jambon|porc|boeuf)'],
+ ['patis','amandes? (en |de )?poudre|sucre (glace|vanille|roux|semoule|en poudre)|poudre (de |d.)(amande|noisette|coco|cacao|chocolat|vanille|levure)|(noix de )?coco rapee'],
  ['surg','surgele|glace|sorbet|poelee|nugget|cordon bleu|glacon|frites?'],
- ['maison','papier|essuie|lessive|savon|shampoing|dentifrice|eponge|poubelle|liquide vaisselle|sopalin|mouchoir|couche|lingette|pastille|gel douche|deodorant|adoucissant|javel'],
- ['epic','lait (de |d.)(coco|riz|soja|amande|avoine|noisette)|creme (de |d.)(coco|riz|soja)|boisson (au|a l.)(soja|avoine|amande)|tomates? (pelee|concassee|en de)|concasse|coulis|passata|puree de tomate|concentre de tomate|conserve|en boite|boite'],
- ['crem','pate (brisee|feuilletee|sablee|a tarte|a pizza)|pate fraiche'],
- ['sucre','lait (en )?poudre|poudre (de |d.)(amande|noisette|coco|cacao|chocolat|vanille|levure|cafe)|beurre (de |d.)(cacahuete|amande)|sucre|farine|levure|maizena|fecule|chocolat|cacao|miel|confiture|nutella|pate (a|de) (tartiner|speculoos)|sirop|biscuit|gateau|speculoos|cereale|muesli|flocon|avoine|cafe|the|tisane|infusion|compote|bonbon|creme (de |d.)marron|gelatine|agar|bicarbonate|pepite|colorant|pain d.epice|pate d.amande|fruits? confit'],
- ['epices','sel|poivre|epice|curry|paprika|cumin|cannelle|muscade|safran|curcuma|piment|herbes? de provence|origan|thym|romarin|laurier|bouillon|cube|sauce|vinaigre|moutarde|ketchup|mayonnaise|cornichon|capre|caprier|olive|huile|tabasco|harissa|wasabi|pesto|tahini|sesame|pavot|aromate|arome|extrait|vanille|poudre|moulue?|seche|sechee|granulee?|lyophilisee?|garam masala|ras el hanout|quatre epices|fleur de sel'],
+ ['frais','lait (de |d.)(riz|soja|amande|avoine|noisette)|boisson (au|a l.)(soja|avoine|amande)'],
+ ['pdej','lait (en )?poudre|nesquik|chocolat en poudre'],
+ ['epices','lait (de |d.)coco|creme (de |d.)coco|tomates? (pelee|concassee)|concasse|coulis|passata|puree de tomate|concentre de tomate'],
+ ['pdej','cafe|the|tisane|infusion|cereale|muesli|flocon|avoine|confiture|miel|nutella|pate (a|de) (tartiner|speculoos)|sirop|compote|beurre (de |d.)(cacahuete|amande)|biscotte|creme (de |d.)marron|chicoree'],
+ ['patis','sucre|farine|levure|maizena|fecule|chocolat|cacao|vanille|gelatine|agar|bicarbonate|pepite|colorant|pate d.amande|fruits? confit|chantilly|extrait|arome|praline|meringue|creme patissiere|poudre a lever'],
+ ['epices','sel|poivre|epice|curry|paprika|cumin|cannelle|muscade|safran|curcuma|piment|herbes? de provence|origan|thym|romarin|laurier|bouillon|cube|sauce|vinaigre|moutarde|ketchup|mayonnaise|cornichon|capre|caprier|olive|huile|tabasco|harissa|wasabi|pesto|tahini|sesame|pavot|aromate|poudre|moulue?|seche|sechee|granulee?|lyophilisee?|garam masala|ras el hanout|quatre epices|fleur de sel'],
+ ['bisc','biscuit|gateau|speculoos|bonbon|chips|cacahuete|noix|noisette|amande|pistache|raisin sec|fruits? sec|abricot sec|pop.?corn|cracker|madeleine|brownie|barre|confiserie|chewing|reglisse|caramel|nougat|marshmallow|pain d.epice'],
  ['bois','eau|jus|soda|coca|limonade|biere|vin|cidre|champagne|alcool|whisky|rhum|vodka|pastis|tonic|ice tea|boisson'],
- ['boul','pain|baguette|brioche|croissant|viennoiserie|burger|bun|pita|naan|toast|biscotte|chausson|tartine|fougasse|ficelle'],
- ['pois','saumon|cabillaud|colin|truite|crevette|gambas|moule|poisson|merlu|bar|dorade|lieu|sole|calamar|encornet|poulpe|huitre|coquille|surimi|langoustine|haddock|lotte|raie|thon frais|maquereau|bulot|crabe|homard|ecrevisse'],
- ['bouch','poulet|dinde|boeuf|veau|porc|agneau|canard|lapin|steak|hache|escalope|cote|cotelette|saucisse|merguez|lardon|jambon|bacon|roti|gigot|filet mignon|cuisse|aiguillette|viande|chorizo|saucisson|pate de campagne|rillette|salami|mortadelle|poitrine|speck|knacki|boudin|andouille|magret|foie|rognon|travers|paleron|bavette|entrecote|rumsteck|jarret|gesier|volaille|pintade|caille|blanc de|cervelas|chair a saucisse'],
- ['crem','lait|creme|beurre|oeuf|fromage|gruyere|emmental|mozzarella|parmesan|comte|chevre|feta|ricotta|mascarpone|yaourt|yogourt|skyr|faisselle|camembert|brie|reblochon|cheddar|boursin|margarine|raclette|roquefort|bleu|gorgonzola|munster|maroilles|tomme|cantal|morbier|philadelphia|kiri|vache qui rit|ravioli|tortellini|gnocchi|tofu'],
- ['epic','pates?|spaghetti|tagliatelle|penne|macaroni|fusilli|coquillette|riz|semoule|couscous|quinoa|boulgour|lentille|pois chiche|flageolet|haricots? (rouge|blanc|sec|noir)|noix|noisette|amande|cacahuete|pistache|raisin sec|fruits? sec|abricot sec|chips|soja|nouille|vermicelle|tortilla|wrap|galette|tapioca|thon|sardine|anchois|mais|pop.?corn|lait'],
- ['fl','tomate|carotte|oignon|ail|echalote|pommes? de terre|patate|courgette|aubergine|poivron|champignon|salade|laitue|epinard|chou|choux|brocoli|poireau|celeri|navet|radis|concombre|avocat|citron|lime|orange|pomme|poire|banane|fraise|framboise|myrtille|raisin|mangue|ananas|kiwi|peche|nectarine|abricot|cerise|melon|pasteque|haricots? vert|petits? pois|persil|basilic|coriandre|menthe|ciboulette|aneth|estragon|cresson|gingembre|courge|potiron|butternut|fenouil|endive|mache|roquette|betterave|asperge|artichaut|legume|fruit|clementine|mandarine|pamplemousse|prune|figue|cebette|herbe|sauge|blette|panais|topinambour|citrouille|grenade|rhubarbe|cassis|groseille|mure']
+ ['boul','pain|baguette|brioche|croissant|viennoiserie|burger|bun|pita|naan|toast|chausson|tartine|fougasse|ficelle|wrap|tortilla|galette'],
+ ['pois','saumon|cabillaud|colin|truite|crevette|gambas|moule|poisson|merlu|bar|dorade|lieu|sole|calamar|encornet|poulpe|huitre|coquille|surimi|langoustine|haddock|lotte|raie|thon|sardine|anchois|maquereau|bulot|crabe|homard|ecrevisse'],
+ ['bouch','poulet|dinde|boeuf|veau|porc|agneau|canard|lapin|steak|hache|escalope|cote|cotelette|saucisse|merguez|roti|gigot|filet mignon|cuisse|aiguillette|viande|magret|foie|rognon|travers|paleron|bavette|entrecote|rumsteck|jarret|gesier|volaille|pintade|caille|blanc de|chair a saucisse|boudin|andouille|joue'],
+ ['frais','jambon|lardon|bacon|chorizo|saucisson|pate de campagne|rillette|salami|mortadelle|poitrine|speck|knacki|cervelas|charcuterie|lait|creme|beurre|oeuf|fromage|gruyere|emmental|mozzarella|parmesan|comte|chevre|feta|ricotta|mascarpone|yaourt|yogourt|skyr|faisselle|camembert|brie|reblochon|cheddar|boursin|margarine|raclette|roquefort|bleu|gorgonzola|munster|maroilles|tomme|cantal|morbier|philadelphia|kiri|vache qui rit|ravioli|tortellini|gnocchi|tofu|pate fraiche|pate (brisee|feuilletee|sablee|a tarte|a pizza)|houmous|tzatziki|dessert|flan|danette'],
+ ['fec','pates?|spaghetti|tagliatelle|penne|macaroni|fusilli|coquillette|riz|semoule|couscous|quinoa|boulgour|lentille|pois chiche|flageolet|haricots? (rouge|blanc|sec|noir)|nouille|vermicelle|tapioca|polenta|ble|orge|epeautre|millet|sarrasin|pois casse|feve'],
+ ['fl','tomate|carotte|oignon|ail|echalote|pommes? de terre|patate|courgette|aubergine|poivron|champignon|salade|laitue|epinard|chou|choux|brocoli|poireau|celeri|navet|radis|concombre|avocat|citron|lime|orange|pomme|poire|banane|fraise|framboise|myrtille|raisin|mangue|ananas|kiwi|peche|nectarine|abricot|cerise|melon|pasteque|haricots? vert|petits? pois|mais|persil|basilic|coriandre|menthe|ciboulette|aneth|estragon|cresson|gingembre|courge|potiron|butternut|fenouil|endive|mache|roquette|betterave|asperge|artichaut|legume|fruit|clementine|mandarine|pamplemousse|prune|figue|cebette|herbe|sauge|blette|panais|topinambour|citrouille|grenade|rhubarbe|cassis|groseille|mure']
 ].map(([k,a])=>[RI[k],new RegExp('(^|[^a-z])(?:'+a+')(?:e?s|x)?(?![a-z])')]);
 const norm=t=>String(t).toLowerCase().replace(/œ/g,'oe').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[’']/g,'.');
 const rayonOf=n=>{n=norm(n);for(const [i,re] of RULES) if(re.test(n)) return i; return RAY.length-1};
 function parseQ(q){q=String(q??'').trim(); const m=q.match(/^(\d+\s*\/\s*\d+|\d+(?:[.,]\d+)?)\s*(.*)$/); if(!m) return {t:q};
   let v; if(m[1].includes('/')){const [x,y]=m[1].split('/');v=+x/+y}else v=parseFloat(m[1].replace(',','.')); return {v,u:m[2].trim()}}
 function list(){
-  const ovr={}; Object.keys(S.checked).forEach(k=>{if(k.startsWith('__r:')){const j=k.lastIndexOf('=');ovr[k.slice(4,j)]=+k.slice(j+1)}});
+  const ovr={},xs=[]; Object.keys(S.checked).forEach(k=>{if(k.startsWith('__r:')){const j=k.lastIndexOf('=');ovr[k.slice(4,j)]=+k.slice(j+1)}else if(k.startsWith('__x:')){const p=k.slice(4).split('§');xs.push({n:p[0],q:p[1]||''})}});
   const m=new Map();
-  S.plan.forEach(p=>{const r=rec(p.rid); if(!r) return;
-    r.ings.forEach(g=>{const n=(g.n||'').trim(); if(!n) return; const k=n.toLowerCase(), e=m.get(k)||{k,n,nums:new Map(),txt:[]}, q=parseQ(g.q);
-      if(q.t!==undefined){if(q.t&&!e.txt.includes(q.t))e.txt.push(q.t)}
-      else{const uk=q.u.toLowerCase(),o=e.nums.get(uk)||{u:q.u,v:0};o.v+=q.v*p.times;e.nums.set(uk,o)}
-      m.set(k,e)})});
-  return [...m.values()].sort((a,b)=>a.n.localeCompare(b.n,'fr')).map(e=>({k:e.k,n:e.n,r:ovr[e.k]??rayonOf(e.n),q:[...e.nums.values()].map(o=>(fmt(o.v)+' '+o.u).trim()).concat(e.txt).join(' + ')}));
+  const add=(g,times,ex)=>{const n=(g.n||'').trim(); if(!n) return; const k=n.toLowerCase(), e=m.get(k)||{k,n,nums:new Map(),txt:[],ex:false}, q=parseQ(g.q); if(ex) e.ex=true;
+    if(q.t!==undefined){if(q.t&&!e.txt.includes(q.t))e.txt.push(q.t)}
+    else{const uk=q.u.toLowerCase(),o=e.nums.get(uk)||{u:q.u,v:0};o.v+=q.v*times;e.nums.set(uk,o)}
+    m.set(k,e)};
+  S.plan.forEach(p=>{const r=rec(p.rid); if(r) r.ings.forEach(g=>add(g,p.times,false))});
+  xs.forEach(g=>add(g,1,true));
+  return [...m.values()].sort((a,b)=>a.n.localeCompare(b.n,'fr')).map(e=>({k:e.k,n:e.n,ex:e.ex,r:ovr[e.k]??rayonOf(e.n),q:[...e.nums.values()].map(o=>(fmt(o.v)+' '+o.u).trim()).concat(e.txt).join(' + ')}));
 }
 const showP=new Set();
 const OKT=new Set(['B','STRONG','I','EM','U','S','STRIKE','DEL','UL','OL','LI','BR','P','DIV','H4']);
@@ -223,12 +227,12 @@ function renderWeek(){
         h+=`<div class="prep"><b>Ingrédients (×${p.times})</b><ul>${rr.ings.filter(g=>g.n).map(g=>{const q=parseQ(g.q);return `<li>${q.t===undefined?esc((fmt(q.v*p.times)+' '+q.u).trim()):esc(q.t)} ${esc(g.n)}</li>`}).join('')}</ul><b>Préparation</b>${has?`<div class="pbody">${ph}</div>`:`<p style="color:var(--mute);margin:4px 0 0">Pas encore de préparation : ajoute-la dans « Mes recettes ».</p>`}</div>`}}
   });
   const L=list();
-  h+=`<h2>🧺 Liste de courses</h2>`;
+  h+=`<h2>🧺 Liste de courses</h2><div class="row noprint" style="margin-bottom:10px"><input id="xname" placeholder="Ajouter un article (ex : papier toilette)" style="flex:2;min-width:170px"><input id="xq" placeholder="Quantité (facultatif)" style="flex:1;min-width:110px"><button class="btn p" data-a="addx">Ajouter</button></div>`;
   if(!L.length) h+=`<p class="empty">Choisis une recette (ou clique sur 🎲) : la liste se remplit toute seule.</p>`;
   else{
     h+=`<div class="row noprint" style="margin-bottom:6px"><button class="btn" data-a="copy">Copier la liste</button><button class="btn" data-a="print">Imprimer</button><button class="btn" data-a="uncheck">Tout décocher</button></div>`;
     const G=RAY.map(()=>[]); L.forEach(e=>G[e.r].push(e));
-    h+='<div class="paper">'+G.map((it,i)=>it.length?`<div class="rayon">${RAY[i][1]} ${RAY[i][0]}</div>`+it.map(e=>`<label class="item ${S.checked[e.k]?'done':''}"><input type="checkbox" data-a="chk" data-k="${esc(e.k)}"${S.checked[e.k]?' checked':''}><span>${esc(e.n)}</span><span class="q">${esc(e.q)}</span><select class="mv" data-a="mv" data-k="${esc(e.k)}" title="Changer de rayon" aria-label="Changer de rayon"><option value="">⇄</option>${RAY.map((r,j)=>`<option value="${j}">${r[1]} ${r[0]}</option>`).join('')}</select></label>`).join(''):'').join('')+'</div>';
+    h+='<div class="paper">'+G.map((it,i)=>it.length?`<div class="rayon">${RAY[i][1]} ${RAY[i][0]}</div>`+it.map(e=>`<label class="item ${S.checked[e.k]?'done':''}"><input type="checkbox" data-a="chk" data-k="${esc(e.k)}"${S.checked[e.k]?' checked':''}><span>${esc(e.n)}</span><span class="q">${esc(e.q)}</span><select class="mv" data-a="mv" data-k="${esc(e.k)}" title="Changer de rayon" aria-label="Changer de rayon"><option value="">⇄</option>${RAY.map((r,j)=>`<option value="${j}">${r[1]} ${r[0]}</option>`).join('')}</select>${e.ex?`<button type="button" class="x" data-a="delx" data-k="${esc(e.k)}" title="Retirer de la liste" aria-label="Retirer de la liste">✕</button>`:''}</label>`).join(''):'').join('')+'</div>';
   }
   $('#week').innerHTML=h;
 }
@@ -272,13 +276,15 @@ document.addEventListener('click',e=>{
   else if(a==='tm'){const p=S.plan[i];p.times=Math.min(9,Math.max(1,p.times+ +b.dataset.d));save();renderWeek()}
   else if(a==='copy'){copyText((()=>{const G=RAY.map(()=>[]);list().forEach(e=>G[e.r].push(e));return G.map((it,i)=>it.length?RAY[i][1]+' '+RAY[i][0]+'\n'+it.map(x=>'- '+x.n+(x.q?' : '+x.q:'')).join('\n'):'').filter(Boolean).join('\n\n')})());b.textContent='Copié ✔';setTimeout(()=>b.textContent='Copier la liste',1500)}
   else if(a==='print') window.print();
-  else if(a==='uncheck'){S.checked=Object.fromEntries(Object.entries(S.checked).filter(([k])=>k.startsWith('__r:')));save();renderWeek()}
+  else if(a==='uncheck'){S.checked=Object.fromEntries(Object.entries(S.checked).filter(([k])=>k.startsWith('__r:')||k.startsWith('__x:')));save();renderWeek()}
   else if(a==='addrec'){const v=$('#newname').value.trim(); if(!v) return $('#newname').focus(); const n={id:uid(),name:v,ings:[{n:'',q:''}]};S.recipes.push(n);S.open=n.id;save();renderRec()}
   else if(a==='delrec'){if(confirm('Supprimer « '+r.name+' » ?')){S.recipes=S.recipes.filter(x=>x!==r);S.plan.forEach(p=>{if(p.rid===r.id)p.rid=''});save();renderRec()}}
   else if(a==='adding'){r.ings.push({n:'',q:''});S.open=r.id;save();renderRec()}
   else if(a==='deling'){r.ings.splice(+b.dataset.k,1);S.open=r.id;save();renderRec()}
   else if(a==='export'){const l=document.createElement('a');l.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,1)],{type:'application/json'}));l.download='mes-recettes.json';l.click()}
   else if(a==='cmd'){const ed=b.closest('.body').querySelector('.rte');ed.focus();document.execCommand(b.dataset.cmd,false,b.dataset.val||null);savePrep(ed)}
+  else if(a==='addx'){const n=$('#xname').value.trim().replace(/§/g,''); if(!n) return $('#xname').focus(); const q=$('#xq').value.trim().replace(/§/g,''); S.checked['__x:'+n+'§'+q]=true; save(); renderWeek(); const f=$('#xname'); f&&f.focus()}
+  else if(a==='delx'){const k=b.dataset.k; Object.keys(S.checked).forEach(x=>{if(x.startsWith('__x:')&&x.slice(4).split('§')[0].toLowerCase()===k) delete S.checked[x]}); save(); renderWeek()}
   else if(a==='showprep'){const k=b.dataset.r; showP.has(k)?showP.delete(k):showP.add(k); renderWeek()}
   else if(a==='import') $('#file').click();
   else if(a==='syncconnect') syncConnect($('#sheeturl').value);
@@ -304,6 +310,7 @@ if(sync){setSt('☁ Synchronisation…');keepLink();pull()}
 document.addEventListener('input',e=>{const t=e.target; if(t.matches&&t.matches('input,.rte'))typing=true; if(t.matches&&t.matches('.rte')){clearTimeout(pt);pt=setTimeout(()=>savePrep(t),800)}});
 ['mousedown','touchstart'].forEach(ev=>document.addEventListener(ev,e=>{if(e.target.closest&&e.target.closest('.tb'))e.preventDefault()},{passive:false}));
 document.addEventListener('change',()=>{typing=false});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches&&e.target.matches('#xname,#xq')){e.preventDefault();document.querySelector('[data-a=addx]').click()}});
 document.addEventListener('focusout',e=>{if(e.target.matches&&e.target.matches('.rte')){clearTimeout(pt);savePrep(e.target)}typing=false});
 window.addEventListener('focus',()=>{if(sync)pull()});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&sync)pull()});
