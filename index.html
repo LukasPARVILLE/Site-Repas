@@ -15,7 +15,8 @@
 <style>
 :root{color-scheme:light;--bg:#f8f4ec;--card:#fffdf8;--ink:#2b2420;--mute:#7a6e63;--line:#e6dccd;--g:#3d6b4a;--gl:#e6efe3;--y:#f3c64d;--t:#cf4a30;--warn:#c4521b;--serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 "Avenir Next","Segoe UI",system-ui,sans-serif}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;overflow-x:hidden;background:var(--bg);color:var(--ink);font:16px/1.45 "Avenir Next","Segoe UI",system-ui,sans-serif}
 body::before{content:"";display:block;height:16px;background-color:var(--card);background-image:linear-gradient(90deg,rgba(207,74,48,.5) 50%,transparent 50%),linear-gradient(rgba(207,74,48,.5) 50%,transparent 50%);background-size:16px 16px;border-bottom:1px solid var(--line)}
 main{max-width:760px;margin:0 auto;padding:18px 14px 60px}
 h1{font:italic 700 2rem/1.15 var(--serif);margin:6px 0 14px;letter-spacing:-.01em}
@@ -64,10 +65,14 @@ select{font-family:var(--serif);font-weight:600}
 .empty{color:var(--mute);padding:16px;border:2px dashed var(--line);border-radius:16px;font-style:italic}
 .paper{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--t);border-radius:6px 14px 14px 6px;padding:2px 16px 12px;box-shadow:0 8px 20px -14px rgba(60,40,20,.5)}
 .rayon{font:700 .8rem var(--serif);text-transform:uppercase;letter-spacing:.12em;color:var(--t);margin:16px 0 2px}
-.item{display:flex;gap:10px;align-items:center;padding:9px 2px;border-bottom:1px dotted var(--line);cursor:pointer}
+.item{display:flex;gap:8px;align-items:center;padding:6px 2px;min-height:46px;border-bottom:1px dotted var(--line);cursor:pointer}
 .item input{width:20px;height:20px;accent-color:var(--g);flex:none}
-.mv{width:auto;flex:none;border:0;background:none;padding:2px;font:inherit;font-size:.9rem;color:var(--mute);font-family:inherit;font-weight:400}
-.item .q{margin-left:auto;font-weight:700;white-space:nowrap;font-family:var(--serif)}
+.item .nm{flex:1;min-width:0;overflow-wrap:anywhere}
+.item .q{margin-left:auto;max-width:42%;text-align:right;font-weight:700;font-family:var(--serif);overflow-wrap:anywhere}
+.mvw{position:relative;flex:none;width:34px;height:34px;display:grid;place-items:center;border-radius:50%;color:var(--mute);font-size:1.05rem}
+.mvw:hover{background:var(--gl)}
+.mvw select{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;padding:0;border:0;font-size:16px}
+.item .x{width:34px;height:34px;flex:none;font-size:1.1rem}
 .item.done{color:var(--mute);text-decoration:line-through}
 details{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--g);border-radius:6px 14px 14px 6px;margin-bottom:10px}
 summary{padding:13px 12px;font:700 1.05rem var(--serif);cursor:pointer}
@@ -76,7 +81,7 @@ summary small{color:var(--mute);font:400 .85rem "Avenir Next","Segoe UI",system-
 .ing{display:grid;grid-template-columns:1.6fr 1.4fr 34px;gap:6px;margin-bottom:6px}
 .ing.h{color:var(--mute);font-size:.8rem}
 .x{border:0;background:none;color:var(--warn);font-size:1.2rem}
-@media(max-width:560px){.slot{grid-template-columns:34px 1fr auto}.slot .times{grid-column:2/4}h1{font-size:1.7rem}}
+@media(max-width:560px){.slot{grid-template-columns:34px 1fr auto}.slot select{grid-column:2/4}.slot .dice{grid-column:2;justify-self:start}.slot .times{grid-column:3}.ing.h{display:none}.item .q{max-width:46%}h1{font-size:1.7rem}}
 @media print{nav,.noprint,body::before{display:none!important}body{background:#fff;color:#000}.paper{box-shadow:none}}
 </style>
 </head>
@@ -232,7 +237,7 @@ function renderWeek(){
   else{
     h+=`<div class="row noprint" style="margin-bottom:6px"><button class="btn" data-a="copy">Copier la liste</button><button class="btn" data-a="print">Imprimer</button><button class="btn" data-a="uncheck">Tout décocher</button></div>`;
     const G=RAY.map(()=>[]); L.forEach(e=>G[e.r].push(e));
-    h+='<div class="paper">'+G.map((it,i)=>it.length?`<div class="rayon">${RAY[i][1]} ${RAY[i][0]}</div>`+it.map(e=>`<label class="item ${S.checked[e.k]?'done':''}"><input type="checkbox" data-a="chk" data-k="${esc(e.k)}"${S.checked[e.k]?' checked':''}><span>${esc(e.n)}</span><span class="q">${esc(e.q)}</span><select class="mv" data-a="mv" data-k="${esc(e.k)}" title="Changer de rayon" aria-label="Changer de rayon"><option value="">⇄</option>${RAY.map((r,j)=>`<option value="${j}">${r[1]} ${r[0]}</option>`).join('')}</select>${e.ex?`<button type="button" class="x" data-a="delx" data-k="${esc(e.k)}" title="Retirer de la liste" aria-label="Retirer de la liste">✕</button>`:''}</label>`).join(''):'').join('')+'</div>';
+    h+='<div class="paper">'+G.map((it,i)=>it.length?`<div class="rayon">${RAY[i][1]} ${RAY[i][0]}</div>`+it.map(e=>`<label class="item ${S.checked[e.k]?'done':''}"><input type="checkbox" data-a="chk" data-k="${esc(e.k)}"${S.checked[e.k]?' checked':''}><span class="nm">${esc(e.n)}</span><span class="q">${esc(e.q)}</span><span class="mvw">⇄<select class="mv" data-a="mv" data-k="${esc(e.k)}" title="Changer de rayon" aria-label="Changer de rayon"><option value="">⇄</option>${RAY.map((r,j)=>`<option value="${j}">${r[1]} ${r[0]}</option>`).join('')}</select></span>${e.ex?`<button type="button" class="x" data-a="delx" data-k="${esc(e.k)}" title="Retirer de la liste" aria-label="Retirer de la liste">✕</button>`:''}</label>`).join(''):'').join('')+'</div>';
   }
   $('#week').innerHTML=h;
 }
